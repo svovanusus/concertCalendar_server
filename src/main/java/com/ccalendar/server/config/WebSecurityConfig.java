@@ -30,6 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //Настройка Spring Security
         http
             .csrf().disable()
                 .exceptionHandling()
@@ -53,10 +54,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception{
+        //Настройка способа авторизации
+        //Установка собственного сервиса пользователея
         auth.userDetailsService(userService)
                 .passwordEncoder(encoder());
     }
 
+    //Шифратор для паролей
     @Bean
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();

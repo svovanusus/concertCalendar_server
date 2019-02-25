@@ -1,81 +1,66 @@
 package com.ccalendar.server.api.controllers;
 
 import com.ccalendar.server.api.data.EventData;
-import com.ccalendar.server.api.data.GenreData;
 import com.ccalendar.server.api.data.ResultResponse;
 import com.ccalendar.server.db.model.UserModel;
+import com.ccalendar.server.domain.exceptions.EventNotFoundException;
+import com.ccalendar.server.domain.model.Event;
 import com.ccalendar.server.domain.services.event.EventService;
 import com.ccalendar.server.domain.util.EventConverter;
-import com.ccalendar.server.domain.util.GenreConverter;
-import com.ccalendar.server.domain.util.UserConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 
 @Controller
-@RequestMapping("/events")
+@RequestMapping("/event")
 public class EventController {
 
     private EventService eventService;
 
-    @RequestMapping("/all")
+    @GetMapping("/")
     @ResponseBody
-    public ResultResponse<Collection<EventData>> getAll(@AuthenticationPrincipal UserModel userModel){
+    public ResultResponse<EventData> getEventById(
+            @AuthenticationPrincipal UserModel userModel,
+            @RequestParam(name = "id") long eventId,
+            HttpServletResponse httpResponse){
+        try{
+            EventData response = EventConverter.convertToEventDTO(eventService.getEvent(eventId));
+            return new ResultResponse<>(response);
+        } catch (EventNotFoundException e) {
+            httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return new ResultResponse<>(ResultResponse.Status.ERROR, e.getMessage());
+        }
+    }
+
+    @GetMapping("/concerts")
+    @ResponseBody
+    public ResultResponse<Collection<EventData>> getAllConcerts(@AuthenticationPrincipal UserModel userModel){
         Collection<EventData> response = EventConverter.convertToEventDTO(
-                eventService.getEvents(UserConverter.convertToUserDomain(userModel))
+                eventService.getEvents(userModel, Event.EventType.CONCERT, true)
         );
         return new ResultResponse<>(response);
     }
 
-    @RequestMapping("/first")
+    @GetMapping("/fests")
     @ResponseBody
-    public ResultResponse<EventData> getFirst(){
-
-        EventData response = EventConverter.convertToEventDTO(eventService.getEvent(1));
-
+    public ResultResponse<Collection<EventData>> getAllFests(@AuthenticationPrincipal UserModel userModel){
+        Collection<EventData> response = EventConverter.convertToEventDTO(
+                eventService.getEvents(userModel, Event.EventType.FEST, false)
+        );
         return new ResultResponse<>(response);
     }
 
-    @RequestMapping("/genres")
+    @PutMapping("/subscribe")
     @ResponseBody
-    public ResultResponse<Collection<GenreData>> getGenres(@RequestParam(name = "eventId") long eventId){
-        try {
-            Collection<GenreData> response = GenreConverter.convertToGenreDTO(
-                    eventService.getEventGenres(eventId)
-            );
-            return new ResultResponse<>(response);
-        }
-        catch (RuntimeException e){
-            return new ResultResponse<>(ResultResponse.Status.ERROR, e.getLocalizedMessage());
-        }
-    }
+    public ResultResponse<String> subscribeUserToEvent(
+            @AuthenticationPrincipal UserModel userModel,
+            @RequestParam(name = "id") long eventId){
 
-    @RequestMapping("/set")
-    @ResponseBody
-    public ResultResponse<EventData> setGenres(){
-        try {
-            ArrayList<Long> arr = new ArrayList<>();
-            arr.add(1L);
-            arr.add(2L);
-            arr.add(3L);
-            return new ResultResponse<>(EventConverter.convertToEventDTO(eventService.setGenresForEvent(1, arr)));
-        }
-        catch (RuntimeException e){
-            return new ResultResponse<>(ResultResponse.Status.ERROR, e.getLocalizedMessage());
-        }
-    }
-
-    @GetMapping("/user")
-    @ResponseBody
-    public String getSessionUser(@AuthenticationPrincipal UserModel userModel){
-        return String.valueOf(userModel.getId());
+        return new ResultResponse<>();
     }
 
     @Autowired

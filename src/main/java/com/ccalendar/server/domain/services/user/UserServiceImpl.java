@@ -2,10 +2,10 @@ package com.ccalendar.server.domain.services.user;
 
 import com.ccalendar.server.db.model.UserModel;
 import com.ccalendar.server.db.repository.UserRepository;
-import com.ccalendar.server.domain.model.User;
 import com.ccalendar.server.domain.exceptions.UserException;
 import com.ccalendar.server.domain.exceptions.UserInvalidParamsException;
 import com.ccalendar.server.domain.exceptions.UserLoginExistsException;
+import com.ccalendar.server.domain.model.User;
 import com.ccalendar.server.domain.util.UserConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -56,8 +57,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByLogin(username)
-                .orElseThrow(()->{throw new UsernameNotFoundException("User not found!");});
+        Optional<UserModel> user = userRepository.findByLogin(username);
+        if (user.isPresent())
+            return user.get();
+        else throw new UsernameNotFoundException("User not found!");
     }
 
     @Autowired

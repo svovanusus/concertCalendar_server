@@ -10,6 +10,11 @@ import java.util.stream.Collectors;
 public final class UserConverter {
     private UserConverter(){}
 
+    /**
+     * Конвертация объекта БД в доменный уровень
+     * @param model объект БД
+     * @return доменный объект
+     */
     public static User convertToUserDomain(UserModel model){
         return new User(
                 model.getId(),
@@ -23,12 +28,22 @@ public final class UserConverter {
         );
     }
 
+    /**
+     * Конвертация списка объектов БД в список доменных объектов
+     * @param models список объектов БД
+     * @return список доменных объектов
+     */
     public static Collection<User> convertToUserDomain(Collection<UserModel> models){
         return models.stream()
                 .map(UserConverter::convertToUserDomain)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Конвертация доменного объекта в DTO
+     * @param user доменный объект
+     * @return DTO
+     */
     public static UserData convertToUserDTO(User user){
         return new UserData(
                 user.getId(),
@@ -40,6 +55,11 @@ public final class UserConverter {
         );
     }
 
+    /**
+     * Конвертация списка доменных объектов в список DTO
+     * @param users список доменных объектов
+     * @return список DTO
+     */
     public static Collection<UserData> convertToUserDTO(Collection<User> users){
         return users.stream()
                 .map(UserConverter::convertToUserDTO)

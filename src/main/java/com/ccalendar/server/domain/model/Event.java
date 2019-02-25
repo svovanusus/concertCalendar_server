@@ -94,4 +94,8 @@ public class Event {
         }
         return false;
     }
+
+    public enum EventType {
+        CONCERT, FEST
+    }
 }

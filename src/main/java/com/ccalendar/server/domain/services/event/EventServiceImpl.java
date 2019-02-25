@@ -2,17 +2,19 @@ package com.ccalendar.server.domain.services.event;
 
 import com.ccalendar.server.db.model.EventModel;
 import com.ccalendar.server.db.model.GenreModel;
+import com.ccalendar.server.db.model.UserModel;
 import com.ccalendar.server.db.repository.EventRepository;
 import com.ccalendar.server.db.repository.GenreRepository;
+import com.ccalendar.server.domain.exceptions.EventNotFoundException;
 import com.ccalendar.server.domain.model.Event;
-import com.ccalendar.server.domain.model.Genre;
 import com.ccalendar.server.domain.model.User;
 import com.ccalendar.server.domain.util.EventConverter;
-import com.ccalendar.server.domain.util.GenreConverter;
+import com.ccalendar.server.domain.util.UserConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -23,8 +25,13 @@ public class EventServiceImpl implements EventService {
     private GenreRepository genreRepository;
 
     @Override
-    public Collection<Event> getEvents(User user){
-        return StreamSupport.stream(eventRepository.findAll().spliterator(), false)
+    public Collection<Event> getEvents(UserModel userModel, Event.EventType type, boolean byUserRegion){
+        User user = UserConverter.convertToUserDomain(userModel);
+        Iterable<EventModel> events =
+                byUserRegion
+                ? eventRepository.findAllByIsFestAndEventRegion(type == Event.EventType.FEST, userModel.getUserRegion())
+                : eventRepository.findAllByIsFest(type == Event.EventType.FEST);
+        return StreamSupport.stream(events.spliterator(), false)
                 .map(EventConverter::convertToEventDomain)
                 .map(event -> {
                     event.setLiked(user.getEvents().contains(event));
@@ -34,20 +41,12 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event getEvent(long id){
-        return eventRepository.findById(id)
-                .map(EventConverter::convertToEventDomain)
-                .orElse(null);
-    }
+    public Event getEvent(long id) throws EventNotFoundException{
+        Optional<EventModel> optEvent = eventRepository.findById(id);
+        if (!optEvent.isPresent())
+            throw new EventNotFoundException(id);
 
-
-
-    @Override
-    public Collection<Genre> getEventGenres(long eventId) throws RuntimeException{
-
-        return StreamSupport.stream(genreRepository.findAll().spliterator(), false)
-                .map(GenreConverter::convertToGenreDomain)
-                .collect(Collectors.toList());
+        return EventConverter.convertToEventDomain(optEvent.get());
     }
 
     @Override

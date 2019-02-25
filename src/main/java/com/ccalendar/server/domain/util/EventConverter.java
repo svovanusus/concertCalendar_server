@@ -10,6 +10,11 @@ import java.util.stream.Collectors;
 public final class EventConverter {
     private EventConverter(){}
 
+    /**
+     * Конвертация объекта БД в доменный уровень
+     * @param model объект БД
+     * @return доменный объект
+     */
     public static Event convertToEventDomain(EventModel model){
         return new Event(
                 model.getId(),
@@ -25,12 +30,22 @@ public final class EventConverter {
         );
     }
 
+    /**
+     * Конвертация списка объектов БД в список доменных объектов
+     * @param models список объектов БД
+     * @return список доменных объектов
+     */
     public static Collection<Event> convertToEventDomain(Collection<EventModel> models){
         return models.stream()
                 .map(EventConverter::convertToEventDomain)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Конвертация доменного объекта в DTO
+     * @param event доменный объект
+     * @return DTO
+     */
     public static EventData convertToEventDTO(Event event){
         return new EventData(
                 event.getId(),
@@ -41,12 +56,16 @@ public final class EventConverter {
                 event.getDate(),
                 event.getArtist(),
                 event.getDescription(),
-                event.isFest(),
                 GenreConverter.convertToGenreDTO(event.getGenres()),
                 event.isLiked()
         );
     }
 
+    /**
+     * Конвертация списка доменных объектов в список DTO
+     * @param events список доменных объектов
+     * @return список DTO
+     */
     public static Collection<EventData> convertToEventDTO(Collection<Event> events){
         return events.stream()
                 .map(EventConverter::convertToEventDTO)

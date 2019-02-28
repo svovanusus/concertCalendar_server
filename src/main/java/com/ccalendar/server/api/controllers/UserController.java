@@ -29,6 +29,12 @@ public class UserController {
         }
     }
 
+    /*@PostMapping("/login")
+    @ResponseBody
+    public String userAuth(@RequestBody LoginUserData userData, HttpServletRequest request, HttpServletResponse response){
+        return "Done!";
+    }*/
+
     @Autowired
     public void setUserService(UserService userService){
         this.userService = userService;

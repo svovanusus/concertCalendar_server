@@ -56,7 +56,6 @@ public final class EventConverter {
                 event.getDate(),
                 event.getArtist(),
                 event.getDescription(),
-                event.isFest(),
                 GenreConverter.convertToGenreDTO(event.getGenres()),
                 event.isLiked()
         );

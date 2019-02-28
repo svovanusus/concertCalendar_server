@@ -2,10 +2,10 @@ package com.ccalendar.server.config;
 
 import com.ccalendar.server.domain.services.user.UserService;
 import com.ccalendar.server.security.MySuccessAuthHandler;
+import com.ccalendar.server.security.RestAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,12 +13,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
     private MySuccessAuthHandler mySuccessHandler;
     private SimpleUrlAuthenticationFailureHandler myFailureHandler = new SimpleUrlAuthenticationFailureHandler();
     private UserService userService;
@@ -34,10 +35,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .csrf().disable()
                 .exceptionHandling()
-                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                .authenticationEntryPoint(restAuthenticationEntryPoint)
             .and()
                 .authorizeRequests()
-                .antMatchers("/register").permitAll()
+                .antMatchers("/register", "/regions").permitAll()
                 .anyRequest().authenticated()
             .and()
                 .formLogin()
@@ -46,10 +47,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(mySuccessHandler)
                 .failureHandler(myFailureHandler)
             .and()
-                .rememberMe()
-                .alwaysRemember(true)
-            .and()
-                .logout();
+                .logout()
+                .logoutSuccessHandler(new SimpleUrlLogoutSuccessHandler());
     }
 
     @Override
@@ -64,6 +63,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Autowired
+    public void setRestAuthenticationEntryPoint(RestAuthenticationEntryPoint restAuthenticationEntryPoint){
+        this.restAuthenticationEntryPoint = restAuthenticationEntryPoint;
     }
 
     @Autowired

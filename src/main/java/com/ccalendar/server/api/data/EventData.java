@@ -12,7 +12,6 @@ public class EventData {
     private LocalDate date;
     private String artist;
     private String description;
-    private boolean isFest;
     private Collection<GenreData> genres;
     private boolean liked;
 
@@ -21,7 +20,7 @@ public class EventData {
     public EventData() {
     }
 
-    public EventData(long id, String title, String poster, RegionData region, String place, LocalDate date, String artist, String description, boolean isFest, Collection<GenreData> genres, boolean liked) {
+    public EventData(long id, String title, String poster, RegionData region, String place, LocalDate date, String artist, String description, Collection<GenreData> genres, boolean liked) {
         this.id = id;
         this.title = title;
         this.poster = poster;
@@ -30,7 +29,6 @@ public class EventData {
         this.date = date;
         this.artist = artist;
         this.description = description;
-        this.isFest = isFest;
         this.genres = genres;
         this.liked = liked;
     }
@@ -67,10 +65,6 @@ public class EventData {
 
     public String getDescription() {
         return description;
-    }
-
-    public boolean isFest() {
-        return isFest;
     }
 
     public Collection<GenreData> getGenres() {
@@ -113,10 +107,6 @@ public class EventData {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public void setFest(boolean fest) {
-        isFest = fest;
     }
 
     public void setGenres(Collection<GenreData> genres) {

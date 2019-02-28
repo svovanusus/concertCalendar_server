@@ -54,6 +54,6 @@ public class ResultResponse<T> implements Serializable {
     }
 
     public enum Status {
-        OK, ERROR
+        OK, ERROR, UNAUTHORIZED
     }
 }

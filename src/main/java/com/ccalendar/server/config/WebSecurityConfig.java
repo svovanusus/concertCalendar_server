@@ -1,7 +1,9 @@
 package com.ccalendar.server.config;
 
 import com.ccalendar.server.domain.services.user.UserService;
+import com.ccalendar.server.security.MyFailureAuthHandler;
 import com.ccalendar.server.security.MySuccessAuthHandler;
+import com.ccalendar.server.security.MySuccessLogoutHandler;
 import com.ccalendar.server.security.RestAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,15 +15,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
+import org.springframework.security.web.savedrequest.NullRequestCache;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
     private MySuccessAuthHandler mySuccessHandler;
-    private SimpleUrlAuthenticationFailureHandler myFailureHandler = new SimpleUrlAuthenticationFailureHandler();
+    private MyFailureAuthHandler myFailureHandler;
+    private MySuccessLogoutHandler mySuccessLogoutHandler;
     private UserService userService;
 
     public WebSecurityConfig(){
@@ -41,6 +43,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/register", "/regions").permitAll()
                 .anyRequest().authenticated()
             .and()
+                .requestCache()
+                .requestCache(new NullRequestCache())
+            .and()
                 .formLogin()
                 .usernameParameter("login")
                 .passwordParameter("password")
@@ -48,7 +53,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(myFailureHandler)
             .and()
                 .logout()
-                .logoutSuccessHandler(new SimpleUrlLogoutSuccessHandler());
+                .deleteCookies("JSESSIONID")
+                .logoutSuccessHandler(mySuccessLogoutHandler);
     }
 
     @Override
@@ -66,13 +72,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    public void setRestAuthenticationEntryPoint(RestAuthenticationEntryPoint restAuthenticationEntryPoint){
+    public void setRestAuthenticationEntryPoint(RestAuthenticationEntryPoint restAuthenticationEntryPoint) {
         this.restAuthenticationEntryPoint = restAuthenticationEntryPoint;
     }
 
     @Autowired
     public void setMySuccessHandler(MySuccessAuthHandler mySuccessHandler){
         this.mySuccessHandler = mySuccessHandler;
+    }
+
+    @Autowired
+    public void setMyFailureHandler(MyFailureAuthHandler myFailureHandler) {
+        this.myFailureHandler = myFailureHandler;
+    }
+
+    @Autowired
+    public void setMySuccessLogoutHandler(MySuccessLogoutHandler mySuccessLogoutHandler) {
+        this.mySuccessLogoutHandler = mySuccessLogoutHandler;
     }
 
     @Autowired

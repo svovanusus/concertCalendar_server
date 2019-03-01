@@ -11,7 +11,7 @@ import java.io.IOException;
 
 @Component
 public class MySuccessAuthHandler extends SimpleUrlAuthenticationSuccessHandler {
-    final String MESSAGE = "{ \"data\" : { \"authToken\" : \"%s\" }, \"meta\" : { \"message\" : \"Authorized\", \"status\" : \"OK\" } }";
+    final String MESSAGE = "{ \"data\" : \"%s\", \"meta\" : { \"message\" : \"Authorized\", \"status\" : \"OK\" } }";
 
     @Override
     public void onAuthenticationSuccess(
@@ -19,7 +19,7 @@ public class MySuccessAuthHandler extends SimpleUrlAuthenticationSuccessHandler 
             final HttpServletResponse response,
             final Authentication auth) throws ServletException, IOException {
 
-        request.getSession().setMaxInactiveInterval(-1);
+        request.getSession().setMaxInactiveInterval(7 * 24 * 60 * 60); //One week session
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json;charset=UTF-8");

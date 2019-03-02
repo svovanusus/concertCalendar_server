@@ -5,6 +5,9 @@ import com.ccalendar.server.db.model.RegionModel;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
 @Repository
 public interface EventRepository extends CrudRepository<EventModel, Long> {
     /**
@@ -21,4 +24,18 @@ public interface EventRepository extends CrudRepository<EventModel, Long> {
      * @return список моделей найденных событий
      */
     public Iterable<EventModel> findAllByIsFestAndEventRegion(boolean isFest, RegionModel region);
+
+    /**
+     * Найти событие по альтернатвному идентификатору
+     * @param altId альтернативный идентификатор
+     * @return модель найденная по заданному значению альтернативного идентификатора
+     */
+    public Optional<EventModel> findByAltId(long altId);
+
+    /**
+     * Найти все события, с определённой датой
+     * @param date дата, по которой ведётся поиск
+     * @return список моделей найденных событий
+     */
+    public Iterable<EventModel>findAllByDate(LocalDate date);
 }

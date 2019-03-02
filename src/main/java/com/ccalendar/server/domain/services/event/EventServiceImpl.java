@@ -24,6 +24,18 @@ public class EventServiceImpl implements EventService {
     private EventRepository eventRepository;
     private GenreRepository genreRepository;
 
+    private boolean filterEvent(UserModel user, EventModel event){
+        if (user.getGenresForUser().toArray().length <= 0) return true;
+
+        for(GenreModel eventGenre : event.getGenresForEvent()){
+            for(GenreModel userGenre : user.getGenresForUser()){
+                if (eventGenre.equals(userGenre)) return true;
+            }
+        }
+
+        return false;
+    }
+
     @Override
     public Collection<Event> getEvents(UserModel userModel, Event.EventType type, boolean byUserRegion){
         User user = UserConverter.convertToUserDomain(userModel);
@@ -32,6 +44,7 @@ public class EventServiceImpl implements EventService {
                 ? eventRepository.findAllByIsFestAndEventRegion(type == Event.EventType.FEST, userModel.getUserRegion())
                 : eventRepository.findAllByIsFest(type == Event.EventType.FEST);
         return StreamSupport.stream(events.spliterator(), false)
+                .filter(event -> filterEvent(userModel, event))
                 .map(EventConverter::convertToEventDomain)
                 .map(event -> {
                     event.setLiked(user.getEvents().contains(event));

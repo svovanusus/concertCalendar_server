@@ -46,13 +46,13 @@ public class UserModel implements UserDetails {
     @JoinColumn(name = "region")
     private RegionModel userRegion;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(name = "user_genre",
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "genre_id") })
     private Set<GenreModel> genresForUser = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(name = "user_event",
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "event_id") })
@@ -177,6 +177,43 @@ public class UserModel implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
+    }
+
+    /**_EVENTS_SUBSCRIBE_**/
+
+    public void addEvent(@NotNull EventModel eventModel) {
+        if (this.eventsForUser != null) this.eventsForUser.add(eventModel);
+    }
+
+    public void removeEvent(@NotNull EventModel eventModel) {
+        if (eventsForUser != null) {
+            EventModel foundEvent = null;
+
+            for (EventModel event : eventsForUser) {
+                if (event.getId() == eventModel.getId()) {
+                    foundEvent = event;
+                    break;
+                }
+            }
+
+            if (foundEvent != null)
+                eventsForUser.remove(foundEvent);
+        }
+
+
+        if (eventModel.getUsers() != null){
+            UserModel foundUser = null;
+
+            for (UserModel user : eventModel.getUsers()) {
+                if (user.getId() == id) {
+                    foundUser = user;
+                    break;
+                }
+            }
+
+            if (foundUser != null)
+                eventModel.getUsers().remove(foundUser);
+        }
     }
 
     /**_USER_ROLES_**/

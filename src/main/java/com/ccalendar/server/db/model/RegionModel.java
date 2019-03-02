@@ -2,6 +2,7 @@ package com.ccalendar.server.db.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,14 +14,18 @@ public class RegionModel implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(name = "alt_id")
+    @Null
+    private long altId;
+
     @Column(name = "title")
     @NotNull
     private String title;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userRegion")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userRegion", cascade = CascadeType.REMOVE)
     private Set<UserModel> users = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "eventRegion")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "eventRegion", cascade = CascadeType.REMOVE)
     private Set<EventModel> events = new HashSet<>();
 
     /**_CONSTRUCTORS_**/
@@ -32,6 +37,10 @@ public class RegionModel implements Serializable {
 
     public long getId() {
         return id;
+    }
+
+    public long getAltId() {
+        return altId;
     }
 
     public String getTitle() {
@@ -50,6 +59,10 @@ public class RegionModel implements Serializable {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public void setAltId(long altId) {
+        this.altId = altId;
     }
 
     public void setTitle(String title) {

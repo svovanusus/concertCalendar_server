@@ -2,10 +2,12 @@ package com.ccalendar.server.api.controllers;
 
 import com.ccalendar.server.api.data.EventData;
 import com.ccalendar.server.api.data.ResultResponse;
+import com.ccalendar.server.db.model.EventModel;
 import com.ccalendar.server.db.model.UserModel;
 import com.ccalendar.server.domain.exceptions.EventNotFoundException;
 import com.ccalendar.server.domain.model.Event;
 import com.ccalendar.server.domain.services.event.EventService;
+import com.ccalendar.server.domain.services.user.UserService;
 import com.ccalendar.server.domain.util.EventConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +22,7 @@ import java.util.Collection;
 public class EventController {
 
     private EventService eventService;
+    private UserService userService;
 
     @GetMapping("/")
     @ResponseBody
@@ -56,15 +59,35 @@ public class EventController {
 
     @PutMapping("/subscribe")
     @ResponseBody
-    public ResultResponse<String> subscribeUserToEvent(
+    public ResultResponse<Boolean> subscribeUserToEvent(
             @AuthenticationPrincipal UserModel userModel,
-            @RequestParam(name = "id") long eventId){
+            @RequestParam(name = "id") EventModel eventModel,
+            @RequestParam(name = "act") boolean isSubscribe,
+            HttpServletResponse httpResponse){
 
-        return new ResultResponse<>();
+        try {
+            httpResponse.setStatus(HttpServletResponse.SC_OK);
+            if (isSubscribe)
+                return new ResultResponse<>(
+                        userService.addEvent(userModel, eventModel)
+                );
+            else
+                return new ResultResponse<>(
+                    userService.delEvent(userModel, eventModel)
+                );
+        } catch (EventNotFoundException e) {
+            httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return new ResultResponse<>(ResultResponse.Status.ERROR, e.getMessage());
+        }
     }
 
     @Autowired
     public void setEventService(EventService eventService){
         this.eventService = eventService;
+    }
+
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 }

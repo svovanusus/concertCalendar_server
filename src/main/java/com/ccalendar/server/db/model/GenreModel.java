@@ -2,6 +2,7 @@ package com.ccalendar.server.db.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,10 +18,14 @@ public class GenreModel implements Serializable {
     @NotNull
     private String title;
 
+    @Column(name = "alt_id")
+    @Null
+    private long altId;
+
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "genresForUser", cascade = CascadeType.REMOVE)
     private Set<UserModel> users = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "genresForEvent")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "genresForEvent", cascade = CascadeType.REMOVE)
     private Set<EventModel> events = new HashSet<>();
 
     /**_CONSTRUCTORS_**/
@@ -36,6 +41,10 @@ public class GenreModel implements Serializable {
 
     public String getTitle(){
         return title;
+    }
+
+    public long getAltId() {
+        return altId;
     }
 
     public Set<UserModel> getUsers(){
@@ -55,4 +64,18 @@ public class GenreModel implements Serializable {
     public void setUsers(Set<UserModel> users) { this.users = users; }
 
     public void setEvents(Set<EventModel> events) { this.events = events; }
+
+    public void setAlt_id(long altId) {
+        this.altId = altId;
+    }
+
+    /**_OBJECT_METHODS_**/
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        return obj instanceof GenreModel
+                && ((GenreModel) obj).getId() == this.id
+                && ((GenreModel) obj).getTitle().equals(this.title);
+    }
 }

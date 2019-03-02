@@ -1,8 +1,12 @@
 package com.ccalendar.server.domain.services.user;
 
+import com.ccalendar.server.api.data.RegisterUserData;
+import com.ccalendar.server.api.data.UpdateUserData;
+import com.ccalendar.server.db.model.EventModel;
 import com.ccalendar.server.db.model.UserModel;
-import com.ccalendar.server.domain.model.User;
+import com.ccalendar.server.domain.exceptions.EventNotFoundException;
 import com.ccalendar.server.domain.exceptions.UserException;
+import com.ccalendar.server.domain.model.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Collection;
@@ -23,20 +27,34 @@ public interface UserService extends UserDetailsService {
 
     /**
      * Сохранить пользователя в БД
-     * @param user объект БД, который нужно сохранить
-     * @param isANewUser флаг, является ли пользователь новым
+     * @param user объект нового пользователя, который нужно сохранить
      * @return Доменный объект сохранённого пользователя
      * @throws UserException Ошибка пользователя при сохранении
      */
-    public User saveUser(UserModel user, boolean isANewUser) throws UserException;
+    public User registerUser(RegisterUserData user) throws UserException;
 
     /**
      * Сохранить пользователя в БД
-     * @param user объект БД, который нужно сохранить
+     * @param userParams параметры пользователя, которые необходимо оновить
      * @return Доменный объект сохранённого пользователя
      * @throws UserException Ошибка пользователя при сохранении
      */
-    default public User saveUser(UserModel user) throws UserException {
-        return saveUser(user, false);
-    }
+    public User updateUser(UpdateUserData userParams) throws UserException;
+
+
+    /**
+     * Добавить событие в подписки пользователя
+     * @param userModel Объект БД пользователя
+     * @param eventModel Объект БД события
+     * @throws EventNotFoundException если событие не найдено.
+     */
+    public boolean addEvent(UserModel userModel, EventModel eventModel) throws EventNotFoundException;
+
+    /**
+     * Убрать событие из подписок пользователя
+     * @param userModel Объект БД пользователя
+     * @param eventModel Объект БД события
+     * @throws EventNotFoundException если событие не найдено.
+     */
+    public boolean delEvent(UserModel userModel, EventModel eventModel) throws EventNotFoundException;
 }

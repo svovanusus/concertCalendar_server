@@ -15,12 +15,14 @@ public class EventModel implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(name = "alt_id")
+    private long altId;
+
     @Column(name = "title")
     @NotNull
     private String title;
 
     @Column(name = "poster_url")
-    @Null
     private String poster;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -40,7 +42,6 @@ public class EventModel implements Serializable {
     private String artist;
 
     @Column(name = "description")
-    @Null
     private String description;
 
     @Column(name = "fest")
@@ -53,7 +54,7 @@ public class EventModel implements Serializable {
             inverseJoinColumns = { @JoinColumn(name = "genre_id") })
     private Set<GenreModel> genresForEvent = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "eventsForUser")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "eventsForUser", cascade = CascadeType.REMOVE)
     private Set<UserModel> users = new HashSet<>();
 
     /**_CONSTRUCTORS_**/
@@ -65,6 +66,10 @@ public class EventModel implements Serializable {
 
     public long getId() {
         return id;
+    }
+
+    public long getAltId() {
+        return altId;
     }
 
     public String getTitle() {
@@ -111,6 +116,10 @@ public class EventModel implements Serializable {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public void setAltId(long altId) {
+        this.altId = altId;
     }
 
     public void setTitle(@NotNull String title) {

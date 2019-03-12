@@ -27,7 +27,7 @@ public class InfoServiceImpl implements InfoService {
     public Region getRegionById(long id) throws RegionNotFoundException {
         Optional<RegionModel> region = regionRepository.findById(id);
         if (!region.isPresent())
-            throw new RegionNotFoundException(id);
+            throw new RegionNotFoundException();
 
         return RegionConverter.convertToRegionDomain(region.get());
     }
@@ -43,7 +43,7 @@ public class InfoServiceImpl implements InfoService {
     public Genre getGenreById(long id) throws GenreNotFoundException {
         Optional<GenreModel> genre = genreRepository.findById(id);
         if (!genre.isPresent())
-            throw new GenreNotFoundException(id);
+            throw new GenreNotFoundException();
 
         return GenreConverter.convertToGenreDomain(genre.get());
     }

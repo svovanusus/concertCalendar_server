@@ -2,6 +2,7 @@ package com.ccalendar.server.db.repository;
 
 import com.ccalendar.server.db.model.EventModel;
 import com.ccalendar.server.db.model.RegionModel;
+import com.ccalendar.server.db.model.UserModel;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -37,5 +38,9 @@ public interface EventRepository extends CrudRepository<EventModel, Long> {
      * @param date дата, по которой ведётся поиск
      * @return список моделей найденных событий
      */
-    public Iterable<EventModel>findAllByDate(LocalDate date);
+    public Iterable<EventModel> findAllByDate(LocalDate date);
+
+    public Iterable<EventModel> findAllByUsersContaining(UserModel user);
+
+    public Iterable<EventModel> findAllByIsFestAndEventRegionOrIsFestAndUsersContaining(boolean isFest1, RegionModel region, boolean isFest2, UserModel user);
 }

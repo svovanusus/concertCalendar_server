@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
         if (user.getName() == null || user.getName().isEmpty()) throw new UserInvalidParamsException("Name");
         if (user.getUserRegion() == null) throw new UserInvalidParamsException("Region");
         if (userRepository.findByLogin(user.getLogin()).isPresent()){
-            throw new UserLoginExistsException(user.getLogin());
+            throw new UserLoginExistsException();
         }
 
         UserModel userModel = new UserModel();

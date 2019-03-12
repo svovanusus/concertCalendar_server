@@ -25,6 +25,9 @@ public class EventServiceImpl implements EventService {
     private GenreRepository genreRepository;
 
     private boolean filterEvent(UserModel user, EventModel event){
+        for(EventModel em : user.getEventsForUser()){
+            if (event.getId() == em.getId()) return true;
+        }
         if (user.getGenresForUser().toArray().length <= 0) return true;
 
         for(GenreModel eventGenre : event.getGenresForEvent()){
@@ -41,7 +44,8 @@ public class EventServiceImpl implements EventService {
         User user = UserConverter.convertToUserDomain(userModel);
         Iterable<EventModel> events =
                 byUserRegion
-                ? eventRepository.findAllByIsFestAndEventRegion(type == Event.EventType.FEST, userModel.getUserRegion())
+                //? eventRepository.findAllByUsersContaining(userModel)
+                ? eventRepository.findAllByIsFestAndEventRegionOrIsFestAndUsersContaining(type == Event.EventType.FEST, userModel.getUserRegion(), type == Event.EventType.FEST, userModel)
                 : eventRepository.findAllByIsFest(type == Event.EventType.FEST);
         return StreamSupport.stream(events.spliterator(), false)
                 .filter(event -> filterEvent(userModel, event))
@@ -57,7 +61,7 @@ public class EventServiceImpl implements EventService {
     public Event getEvent(long id) throws EventNotFoundException{
         Optional<EventModel> optEvent = eventRepository.findById(id);
         if (!optEvent.isPresent())
-            throw new EventNotFoundException(id);
+            throw new EventNotFoundException();
 
         return EventConverter.convertToEventDomain(optEvent.get());
     }

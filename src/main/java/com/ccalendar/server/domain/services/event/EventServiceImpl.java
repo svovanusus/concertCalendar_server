@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -23,6 +24,14 @@ public class EventServiceImpl implements EventService {
 
     private EventRepository eventRepository;
     private GenreRepository genreRepository;
+
+    private static int compareEvents(Event o1, Event o2) {
+        if (o1.isLiked() == o2.isLiked()){
+            return o1.getDate().compareTo(o2.getDate());
+        }
+        if (o1.isLiked() && !o2.isLiked()) return -1;
+        else return 1;
+    }
 
     private boolean filterEvent(UserModel user, EventModel event){
         for(EventModel em : user.getEventsForUser()){
@@ -46,14 +55,13 @@ public class EventServiceImpl implements EventService {
                 byUserRegion
                 //? eventRepository.findAllByUsersContaining(userModel)
                 ? eventRepository.findAllByIsFestAndEventRegionOrIsFestAndUsersContaining(type == Event.EventType.FEST, userModel.getUserRegion(), type == Event.EventType.FEST, userModel)
+                //? eventRepository.findAllByMyParams(type == Event.EventType.FEST, userModel.getId(), userModel.getUserRegion().getId())
                 : eventRepository.findAllByIsFest(type == Event.EventType.FEST);
         return StreamSupport.stream(events.spliterator(), false)
                 .filter(event -> filterEvent(userModel, event))
                 .map(EventConverter::convertToEventDomain)
-                .map(event -> {
-                    event.setLiked(user.getEvents().contains(event));
-                    return event;
-                })
+                .peek(event -> event.setLiked(user.getEvents().contains(event)))
+                .sorted(EventServiceImpl::compareEvents)
                 .collect(Collectors.toList());
     }
 

@@ -62,6 +62,7 @@ public class EventServiceImpl implements EventService {
                 .map(EventConverter::convertToEventDomain)
                 .peek(event -> event.setLiked(user.getEvents().contains(event)))
                 .sorted(EventServiceImpl::compareEvents)
+                .limit(25)
                 .collect(Collectors.toList());
     }
 

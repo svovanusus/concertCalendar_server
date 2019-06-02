@@ -22,10 +22,10 @@ public class RegionModel implements Serializable {
     @NotNull
     private String title;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userRegion", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userRegion")
     private Set<UserModel> users = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "eventRegion", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "eventRegion")
     private Set<EventModel> events = new HashSet<>();
 
     /**_CONSTRUCTORS_**/

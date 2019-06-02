@@ -23,6 +23,7 @@ import java.util.List;
 @Service
 public class SystemService {
     private static final String CRON1 = "0 50 0 * * *";
+    private static final String CRON2 = "0 30 23 * * *";
     private static final String uri = "https://api.cultserv.ru/v4/events/list";
     private static final String pars = "?session=svovanusus912461&category_id=10&first_only=true&limit=%d&offset=%d&fields=tags, subevents.venue, subevents.venue.region";
     private static final int limit = 100;
@@ -76,6 +77,17 @@ public class SystemService {
             });
         } while (true);
         System.out.println("Events added!");
+    }
+
+    @Scheduled(cron = CRON2)
+    public void delEvents() {
+        eventRepository.findAllByDate(LocalDate.now()).forEach(eventModel -> {
+            eventModel.setUsers(null);
+            eventModel.setGenresForEvent(null);
+
+            eventRepository.save(eventModel);
+            eventRepository.delete(eventModel);
+        });
     }
 
     @Autowired

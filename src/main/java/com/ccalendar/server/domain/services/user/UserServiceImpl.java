@@ -91,36 +91,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean addEvent(UserModel userModel, EventModel eventModel) throws EventNotFoundException {
-        if (eventModel == null)
-            throw new EventNotFoundException();
-
-        userModel.addEvent(eventModel);
-
-        userModel = userRepository.save(userModel);
-
-        Authentication newAuth = new UsernamePasswordAuthenticationToken(userModel, userModel.getPassword(), userModel.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(newAuth);
-
-        return userModel.getEventsForUser().contains(eventModel);
-    }
-
-    @Override
-    public boolean delEvent(UserModel userModel, EventModel eventModel) throws EventNotFoundException {
-        if (eventModel == null)
-            throw new EventNotFoundException();
-
-        userModel.removeEvent(eventModel);
-
-        userModel = userRepository.save(userModel);
-
-        Authentication newAuth = new UsernamePasswordAuthenticationToken(userModel, userModel.getPassword(), userModel.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(newAuth);
-
-        return userModel.getEventsForUser().contains(eventModel);
-    }
-
-    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<UserModel> user = userRepository.findByLogin(username);
         if (user.isPresent())

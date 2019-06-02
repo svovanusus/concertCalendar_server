@@ -31,7 +31,7 @@ public class EventController {
             @RequestParam(name = "id") long eventId,
             HttpServletResponse httpResponse){
         try{
-            EventData response = EventConverter.convertToEventDTO(eventService.getEvent(eventId));
+            EventData response = EventConverter.convertToEventDTO(eventService.getEvent(userModel, eventId));
             return new ResultResponse<>(response);
         } catch (EventNotFoundException e) {
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -69,11 +69,11 @@ public class EventController {
             httpResponse.setStatus(HttpServletResponse.SC_OK);
             if (isSubscribe)
                 return new ResultResponse<>(
-                        userService.addEvent(userModel, eventModel)
+                        eventService.addUser(eventModel, userModel)
                 );
             else
                 return new ResultResponse<>(
-                    userService.delEvent(userModel, eventModel)
+                    eventService.delUser(eventModel, userModel)
                 );
         } catch (EventNotFoundException e) {
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);

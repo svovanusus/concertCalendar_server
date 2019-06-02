@@ -5,23 +5,28 @@ import com.ccalendar.server.db.model.GenreModel;
 import com.ccalendar.server.db.model.UserModel;
 import com.ccalendar.server.db.repository.EventRepository;
 import com.ccalendar.server.db.repository.GenreRepository;
+import com.ccalendar.server.db.repository.UserRepository;
 import com.ccalendar.server.domain.exceptions.EventNotFoundException;
 import com.ccalendar.server.domain.model.Event;
 import com.ccalendar.server.domain.model.User;
 import com.ccalendar.server.domain.util.EventConverter;
 import com.ccalendar.server.domain.util.UserConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
 public class EventServiceImpl implements EventService {
 
+    private UserRepository userRepository;
     private EventRepository eventRepository;
     private GenreRepository genreRepository;
 
@@ -50,7 +55,9 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Collection<Event> getEvents(UserModel userModel, Event.EventType type, boolean byUserRegion){
-        User user = UserConverter.convertToUserDomain(userModel);
+        UserModel um = userRepository.findById(userModel.getId()).orElse(null);
+        if (um == null) return null;
+        User user = UserConverter.convertToUserDomain(um);
         Iterable<EventModel> events =
                 byUserRegion
                 //? eventRepository.findAllByUsersContaining(userModel)
@@ -67,12 +74,17 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event getEvent(long id) throws EventNotFoundException{
+    public Event getEvent(UserModel userModel, long id) throws EventNotFoundException{
+        UserModel um = userRepository.findById(userModel.getId()).orElse(null);
+        if (um == null) return null;
+        User user = UserConverter.convertToUserDomain(um);
         Optional<EventModel> optEvent = eventRepository.findById(id);
         if (!optEvent.isPresent())
             throw new EventNotFoundException();
 
-        return EventConverter.convertToEventDomain(optEvent.get());
+        Event event = EventConverter.convertToEventDomain(optEvent.get());
+        event.setLiked(user.getEvents().contains(event));
+        return event;
     }
 
     @Override
@@ -88,6 +100,45 @@ public class EventServiceImpl implements EventService {
         eventModel.getGenresForEvent().addAll(genreModels);
 
         return EventConverter.convertToEventDomain(eventRepository.save(eventModel));
+    }
+
+    @Override
+    public boolean addUser(EventModel eventModel, UserModel userModel) throws EventNotFoundException {
+        if (eventModel == null)
+            throw new EventNotFoundException();
+
+        eventModel.getUsers().add(userModel);
+        eventRepository.save(eventModel);
+
+        return true;
+    }
+
+    @Override
+    public boolean delUser(EventModel eventModel, UserModel userModel) throws EventNotFoundException {
+        if (eventModel == null)
+            throw new EventNotFoundException();
+
+        Set<UserModel> usersForEvent = eventModel.getUsers();
+        UserModel fountUser = null;
+        for (UserModel user : usersForEvent) {
+            if (user.getId() == userModel.getId()) {
+                fountUser = user;
+                break;
+            }
+        }
+
+        if (fountUser != null)
+            usersForEvent.remove(fountUser);
+
+        eventModel.setUsers(usersForEvent);
+        eventRepository.save(eventModel);
+
+        return false;
+    }
+
+    @Autowired
+    public void setUserRepository(UserRepository userRepository){
+        this.userRepository = userRepository;
     }
 
     @Autowired

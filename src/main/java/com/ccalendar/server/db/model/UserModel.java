@@ -1,5 +1,6 @@
 package com.ccalendar.server.db.model;
 
+import com.ccalendar.server.domain.model.Event;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -46,16 +47,13 @@ public class UserModel implements UserDetails {
     @JoinColumn(name = "region")
     private RegionModel userRegion;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_genre",
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "genre_id") })
     private Set<GenreModel> genresForUser = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    @JoinTable(name = "user_event",
-            joinColumns = { @JoinColumn(name = "user_id") },
-            inverseJoinColumns = { @JoinColumn(name = "event_id") })
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "users", cascade = CascadeType.ALL)
     private Set<EventModel> eventsForUser = new HashSet<>();
 
     /**_CONSTRUCTORS_**/

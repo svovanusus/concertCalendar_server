@@ -1,5 +1,6 @@
 package com.ccalendar.server.domain.services.event;
 
+import com.ccalendar.server.db.model.EventModel;
 import com.ccalendar.server.db.model.UserModel;
 import com.ccalendar.server.domain.exceptions.EventNotFoundException;
 import com.ccalendar.server.domain.model.Event;
@@ -21,7 +22,7 @@ public interface EventService {
      * @param id идентификатор концерта
      * @return доменный объект найденного концерта
      */
-    public Event getEvent(long id) throws EventNotFoundException;
+    public Event getEvent(UserModel userModel, long id) throws EventNotFoundException;
 
     /**
      * Установить список жанров для события
@@ -31,5 +32,7 @@ public interface EventService {
      */
     public Event setGenresForEvent(long eventId, Collection<Long> genres);
 
+    public boolean addUser(EventModel eventModel, UserModel userModel) throws EventNotFoundException;
 
+    public boolean delUser(EventModel eventModel, UserModel userModel) throws EventNotFoundException;
 }

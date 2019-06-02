@@ -48,13 +48,16 @@ public class EventModel implements Serializable {
     @NotNull
     private boolean isFest;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     @JoinTable(name = "event_genre",
             joinColumns = { @JoinColumn(name = "event_id") },
             inverseJoinColumns = { @JoinColumn(name = "genre_id") })
     private Set<GenreModel> genresForEvent = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "eventsForUser", cascade = CascadeType.REMOVE)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_event",
+            joinColumns = { @JoinColumn(name = "event_id") },
+            inverseJoinColumns = { @JoinColumn(name = "user_id") })
     private Set<UserModel> users = new HashSet<>();
 
     /**_CONSTRUCTORS_**/

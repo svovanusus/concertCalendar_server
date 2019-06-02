@@ -40,21 +40,4 @@ public interface UserService extends UserDetailsService {
      * @throws UserException Ошибка пользователя при сохранении
      */
     public User updateUser(UpdateUserData userParams) throws UserException;
-
-
-    /**
-     * Добавить событие в подписки пользователя
-     * @param userModel Объект БД пользователя
-     * @param eventModel Объект БД события
-     * @throws EventNotFoundException если событие не найдено.
-     */
-    public boolean addEvent(UserModel userModel, EventModel eventModel) throws EventNotFoundException;
-
-    /**
-     * Убрать событие из подписок пользователя
-     * @param userModel Объект БД пользователя
-     * @param eventModel Объект БД события
-     * @throws EventNotFoundException если событие не найдено.
-     */
-    public boolean delEvent(UserModel userModel, EventModel eventModel) throws EventNotFoundException;
 }

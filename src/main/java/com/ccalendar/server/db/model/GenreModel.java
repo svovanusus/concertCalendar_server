@@ -22,10 +22,10 @@ public class GenreModel implements Serializable {
     @Null
     private long altId;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "genresForUser", cascade = CascadeType.REMOVE)
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "genresForUser")
     private Set<UserModel> users = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "genresForEvent", cascade = CascadeType.REMOVE)
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "genresForEvent")
     private Set<EventModel> events = new HashSet<>();
 
     /**_CONSTRUCTORS_**/

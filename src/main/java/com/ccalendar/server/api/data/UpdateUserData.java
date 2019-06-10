@@ -9,6 +9,7 @@ public class UpdateUserData {
     private String name;
     private RegionModel userRegion;
     private Collection<GenreModel> genres;
+    private String avatar;
 
     /**_CONSTRUCTORS_**/
 
@@ -35,6 +36,10 @@ public class UpdateUserData {
         return genres;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
     /**_SETTERS_**/
 
     public void setName(String name) {
@@ -47,5 +52,9 @@ public class UpdateUserData {
 
     public void setGenres(Collection<GenreModel> genres) {
         this.genres = genres;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

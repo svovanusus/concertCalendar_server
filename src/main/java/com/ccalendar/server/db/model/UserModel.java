@@ -1,6 +1,7 @@
 package com.ccalendar.server.db.model;
 
 import com.ccalendar.server.domain.model.Event;
+import jdk.internal.jline.internal.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -31,7 +32,6 @@ public class UserModel implements UserDetails {
     private String password;
 
     @Column(name = "avatar_url")
-    @Null
     private String avatar;
 
     @Column(name = "activate")
@@ -83,7 +83,7 @@ public class UserModel implements UserDetails {
         return this.password;
     }
 
-    public @Null String getAvatar() {
+    public String getAvatar() {
         return this.avatar;
     }
 
@@ -121,7 +121,7 @@ public class UserModel implements UserDetails {
         this.password = password;
     }
 
-    public void setAvatar(@NotNull String avatar) {
+    public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 

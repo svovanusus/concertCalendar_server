@@ -77,10 +77,14 @@ public class UserServiceImpl implements UserService {
 
         user.setName(userParams.getName());
         user.setUserRegion(userParams.getUserRegion());
+
         if (userParams.getGenres() != null)
             user.setGenresForUser(new HashSet<>(userParams.getGenres()));
         else
             user.setGenresForUser(new HashSet<>());
+
+        if (userParams.getAvatar() != null)
+            user.setAvatar(userParams.getAvatar());
 
         user = userRepository.save(user);
 

@@ -44,7 +44,7 @@ public class UserModel implements UserDetails {
     @JoinColumn(name = "region")
     private RegionModel userRegion;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_genre",
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "genre_id") })

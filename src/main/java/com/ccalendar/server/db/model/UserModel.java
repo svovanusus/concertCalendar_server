@@ -50,7 +50,7 @@ public class UserModel implements UserDetails {
             inverseJoinColumns = { @JoinColumn(name = "genre_id") })
     private Set<GenreModel> genresForUser = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "users", cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "users", cascade = CascadeType.ALL)
     private Set<EventModel> eventsForUser = new HashSet<>();
 
     /**_CONSTRUCTORS_**/

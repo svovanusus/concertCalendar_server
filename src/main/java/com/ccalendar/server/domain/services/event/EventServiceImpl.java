@@ -108,18 +108,7 @@ public class EventServiceImpl implements EventService {
         if (eventModel == null)
             throw new EventNotFoundException();
         
-        Iterator<GenreModel> userGenres = userModel.getGenresForUser().iterator();
-        Iterator<GenreModel> eventGenres = eventModel.getGenresForEvent().iterator();
-        while (userGenres.hasNext()) {
-            GenreModel userGenre = userGenres.next();
-            while (eventGenres.hasNext()){
-                GenreModel eventGenre = userGenres.next();
-                if (userGenre.equals(eventGenre)){
-                    userModel.getGenresForUser().remove(userGenre);
-                    userModel.getGenresForUser().add(eventGenre);
-                }
-            }
-        }
+        userModel.setGenresForUser(null);
         
         eventModel.getUsers().add(userModel);
         eventRepository.save(eventModel);

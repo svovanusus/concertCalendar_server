@@ -1,13 +1,10 @@
 package com.ccalendar.server.db.model;
 
-import com.ccalendar.server.domain.model.Event;
-import jdk.internal.jline.internal.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -47,7 +44,7 @@ public class UserModel implements UserDetails {
     @JoinColumn(name = "region")
     private RegionModel userRegion;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "user_genre",
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "genre_id") })

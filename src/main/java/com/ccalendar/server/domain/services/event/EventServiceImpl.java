@@ -108,6 +108,16 @@ public class EventServiceImpl implements EventService {
             throw new EventNotFoundException();
 
         eventModel.getUsers().add(userModel);
+        
+        for (GenreModel userGenre : userModel.getGenresForUser()) {
+            for (GenreModel eventGenre : eventModel.getGenresForEvent()){
+                if (userGenre.equals(eventGenre)){
+                    eventModel.getGenresForEvent().remove(eventGenre);
+                    eventModel.getGenresForEvent().add(userGenre);
+                }
+            }
+        }
+        
         eventRepository.save(eventModel);
 
         return true;
